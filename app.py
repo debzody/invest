@@ -21,33 +21,16 @@ def save_investments():
         json.dump(investments, f, indent=4)
 
 INITIAL_PRICES = {
-    'SAP': 200.00,           # XETRA, EUR
-    'HONASA.NS': 450.00,     # NSE, INR
-    'HDFCLIFE': 620.00,      # NSE, INR
-    'JIOFIN': 350.00,        # NSE, INR
-    'NTPCGREEN': 105.00,     # NSE, INR
-    'TATATECH': 1100.00,     # NSE, INR
-    'HDFC_TECH': 14.74,      # Manual entry
-    'INVESCO_TECH': 31.36,
-    'MO_SMALLCAP': 14.35,
-    'MO_MULTICAP': 10.00,
-    'MO_DEFENCE': 6.72,
-    'EDEL_TECH': 15.82
+    'SAP': 200.00, 'HONASA.NS': 450.00, 'HDFCLIFE': 620.00, 'JIOFIN': 350.00,
+    'NTPCGREEN': 105.00, 'TATATECH': 1100.00, 'HDFC_TECH': 14.74,
+    'INVESCO_TECH': 31.36, 'MO_SMALLCAP': 14.35, 'MO_MULTICAP': 10.00,
+    'MO_DEFENCE': 6.72, 'EDEL_TECH': 15.82
 }
 
 CURRENCY = {
-    'SAP': '€',
-    'HONASA.NS': '₹',
-    'HDFCLIFE': '₹',
-    'JIOFIN': '₹',
-    'NTPCGREEN': '₹',
-    'TATATECH': '₹',
-    'HDFC_TECH': '₹',
-    'INVESCO_TECH': '₹',
-    'MO_SMALLCAP': '₹',
-    'MO_MULTICAP': '₹',
-    'MO_DEFENCE': '₹',
-    'EDEL_TECH': '₹'
+    'SAP': '€', 'HONASA.NS': '₹', 'HDFCLIFE': '₹', 'JIOFIN': '₹', 'NTPCGREEN': '₹',
+    'TATATECH': '₹', 'HDFC_TECH': '₹', 'INVESCO_TECH': '₹', 'MO_SMALLCAP': '₹',
+    'MO_MULTICAP': '₹', 'MO_DEFENCE': '₹', 'EDEL_TECH': '₹'
 }
 
 EUR_TO_INR = 90.00
@@ -80,7 +63,7 @@ def update_prices():
     print(f"{datetime.now()} - Price update thread started")
     while True:
         for inv in investments:
-            if inv['type'] == 'stock':  # Only update stocks
+            if inv['type'] == 'stock':
                 real_price = fetch_yahoo_price(inv['symbol'])
                 if real_price is not None:
                     inv['current_price'] = real_price
@@ -153,7 +136,7 @@ def update_investment():
         if 0 <= index < len(investments):
             investments[index]['quantity'] = float(data['quantity'])
             investments[index]['purchase_price'] = float(data['purchase_price'])
-            if data['current_price'] is not None:  # Only for mutual funds
+            if data['current_price'] is not None:
                 investments[index]['current_price'] = float(data['current_price'])
             save_investments()
             return jsonify({'status': 'success'})
@@ -164,4 +147,5 @@ def update_investment():
 if __name__ == '__main__':
     price_thread = threading.Thread(target=update_prices, daemon=True)
     price_thread.start()
-    app.run(debug=True, host='localhost', port=5001)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(debug=False, host='0.0.0.0', port=port)
