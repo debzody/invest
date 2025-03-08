@@ -1,0 +1,94 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f0f0f0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+.total-section {
+  background: #e0f7fa;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.total-section h2 {
+  margin: 0;
+}
+
+.form-section {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+input, select {
+  margin: 5px;
+  padding: 5px;
+}
+
+button {
+  padding: 5px 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin: 2px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.table-section {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.profit {
+  color: green;
+}
+
+.loss {
+  color: red;
+}
+
+.edit-quantity, .edit-price {
+  width: 80px;
+  padding: 2px;
+}
+
+.delete-btn {
+  background-color: #f44336;
+}
+
+.delete-btn:hover {
+  background-color: #da190b;
+}
