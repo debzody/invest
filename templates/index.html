@@ -18,23 +18,22 @@
             <h2>Add New Investment</h2>
             <form id="investmentForm">
                 <select name="type" required>
-                    <option value="stock">Stock</option>
-                    <option value="mutual_fund">Mutual Fund</option>
+                    <option value="stock">Stock/Mutual Fund</option>
                 </select>
                 <select name="suggestion" id="suggestionBox" onchange="fillFields()">
                     <option value="">Select a suggestion</option>
-                    <option value="SAP|SAP SE|XETR">SAP SE (XETR)</option>
-                    <option value="HONASA.NS|HONASA Consumer Ltd.|NSE">HONASA Consumer Ltd. (NSE)</option>
-                    <option value="HDFCLIFE|HDFC Life Insurance|NSE">HDFCLIFE (NSE)</option>
-                    <option value="JIOFIN|Jio Financial Services|NSE">JIOFIN (NSE)</option>
-                    <option value="NTPCGREEN|NTPC Green Energy|NSE">NTPCGREEN (NSE)</option>
-                    <option value="TATATECH|Tata Technologies|NSE">TATATECH (NSE)</option>
-                    <option value="HDFC_TECH|HDFC Technology Fund|MF">HDFC Technology Fund (MF)</option>
-                    <option value="INVESCO_TECH|Invesco India Technology Fund|MF">Invesco India Technology Fund (MF)</option>
-                    <option value="MO_SMALLCAP|Motilal Oswal Small Cap Fund|MF">Motilal Oswal Small Cap Fund (MF)</option>
-                    <option value="MO_MULTICAP|Motilal Oswal Multi Cap Fund|MF">Motilal Oswal Multi Cap Fund (MF)</option>
-                    <option value="MO_DEFENCE|Motilal Oswal Nifty India Defence Index Fund|MF">Motilal Oswal Nifty India Defence Index Fund (MF)</option>
-                    <option value="EDEL_TECH|Edelweiss Technology Fund|MF">Edelweiss Technology Fund (MF)</option>
+                    <option value="SAP|SAP SE">SAP SE (Stock)</option>
+                    <option value="HONASA.NS|HONASA Consumer Ltd.">HONASA Consumer Ltd. (Stock)</option>
+                    <option value="HDFCLIFE|HDFC Life Insurance">HDFCLIFE (Stock)</option>
+                    <option value="JIOFIN|Jio Financial Services">JIOFIN (Stock)</option>
+                    <option value="NTPCGREEN|NTPC Green Energy">NTPCGREEN (Stock)</option>
+                    <option value="TATATECH|Tata Technologies">TATATECH (Stock)</option>
+                    <option value="HDFC_TECH|HDFC Technology Fund">HDFC Technology Fund (MF)</option>
+                    <option value="INVESCO_TECH|Invesco India Technology Fund">Invesco India Technology Fund (MF)</option>
+                    <option value="MO_SMALLCAP|Motilal Oswal Small Cap Fund">Motilal Oswal Small Cap Fund (MF)</option>
+                    <option value="MO_MULTICAP|Motilal Oswal Multi Cap Fund">Motilal Oswal Multi Cap Fund (MF)</option>
+                    <option value="MO_DEFENCE|Motilal Oswal Nifty India Defence Index Fund">Motilal Oswal Nifty India Defence Index Fund (MF)</option>
+                    <option value="EDEL_TECH|Edelweiss Technology Fund">Edelweiss Technology Fund (MF)</option>
                 </select>
                 <input type="text" name="symbol" id="symbol" placeholder="Symbol" required>
                 <input type="text" name="name" id="name" placeholder="Name" required>
@@ -109,11 +108,7 @@
                         <td>${inv.name}</td>
                         <td><input type="number" class="edit-quantity" value="${inv.quantity.toFixed(2)}" step="0.01" data-index="${index}"></td>
                         <td><input type="number" class="edit-price" value="${inv.purchase_price.toFixed(2)}" step="0.01" data-index="${index}">${inv.currency}</td>
-                        <td>
-                            ${inv.type === 'mutual_fund' ? 
-                                `<input type="number" class="edit-current-price" value="${inv.current_price.toFixed(2)}" step="0.01" data-index="${index}">${inv.currency}` :
-                                `${inv.currency}${inv.current_price.toFixed(2)}`}
-                        </td>
+                        <td>${inv.currency}${inv.current_price.toFixed(2)}</td>
                         <td>${inv.currency}${totalValue.toFixed(2)}</td>
                         <td class="${profitLoss >= 0 ? 'profit' : 'loss'}">${inv.currency}${profitLoss.toFixed(2)}</td>
                         <td>${inv.date_added}</td>
@@ -132,11 +127,10 @@
                         const index = this.getAttribute('data-index');
                         const quantity = document.querySelector(`.edit-quantity[data-index="${index}"]`).value;
                         const purchase_price = document.querySelector(`.edit-price[data-index="${index}"]`).value;
-                        const current_price = document.querySelector(`.edit-current-price[data-index="${index}"]`)?.value || null;
                         fetch('/update_investment', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ index, quantity, purchase_price, current_price })
+                            body: JSON.stringify({ index, quantity, purchase_price })
                         })
                         .then(response => response.json())
                         .then(data => {
@@ -173,8 +167,8 @@
         }
 
         document.getElementById('refreshPrices').addEventListener('click', updatePrices);
-        setInterval(updatePrices, 30000); // Update stocks every 30 seconds
-        setInterval(updateTable, 5000);   // Refresh table every 5 seconds
+        setInterval(updatePrices, 60000); // Update prices every 1 minute
+        setInterval(updateTable, 10000);  // Refresh table every 10 seconds
         updateTable();
     </script>
 </body>
