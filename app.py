@@ -1,14 +1,23 @@
 from flask import Flask, render_template, request, jsonify
 import json
 from datetime import datetime
-import threading
-import time
-import yfinance as yf
 import os
+import logging
+from dotenv import load_dotenv
+import requests
+import time
 
 app = Flask(__name__)
 
-DATA_FILE = 'investments.json'
+# Load environment variables
+load_dotenv()
+ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY', 'AMRHJR34NP8I07JI')  # Fallback to your provided key
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+DATA_FILE = os.environ.get('DATA_FILE', 'investments.json')
 
 def load_investments():
     if os.path.exists(DATA_FILE):
@@ -17,8 +26,12 @@ def load_investments():
     return []
 
 def save_investments():
-    with open(DATA_FILE, 'w') as f:
-        json.dump(investments, f, indent=4)
+    try:
+        with open(DATA_FILE, 'w') as f:
+            json.dump(investments, f, indent=4)
+        logger.info(f"Saved investments to {DATA_FILE} at {datetime.now()}")
+    except Exception as e:
+        logger.error(f"Error saving investments at {datetime.now()}: {e}")
 
 INITIAL_PRICES = {
     'SAP': 200.00, 'HONASA.NS': 450.00, 'HDFCLIFE': 620.00, 'JIOFIN': 350.00,
@@ -30,25 +43,73 @@ INITIAL_PRICES = {
 CURRENCY = {
     'SAP': '€', 'HONASA.NS': '₹', 'HDFCLIFE': '₹', 'JIOFIN': '₹', 'NTPCGREEN': '₹',
     'TATATECH': '₹', 'HDFC_TECH': '₹', 'INVESCO_TECH': '₹', 'MO_SMALLCAP': '₹',
-    'MO_MULTICAP': '₹', 'MO_DEFENCE': '₹', 'EDEL_TECH': '₹'
+    'MO_MULTICAP': '₹', 'MO_DEFENCE': '₹', 'EDEL_TECH': '₹', 'INFY': '₹',
+    'RELIANCE': '₹', 'TCS': '₹', 'HDFCBANK': '₹'
 }
 
 EUR_TO_INR = 90.00
 
-def fetch_yahoo_price(symbol):
+def get_nse_live_price(symbol):
+    """Fetch live stock price from NSE India."""
+    url = f"https://www.nseindia.com/api/quote-equity?symbol={symbol}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Accept": "application/json",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "https://www.nseindia.com"
+    }
     try:
-        ticker_symbol = 'SAP.DE' if symbol == 'SAP' else symbol
-        stock = yf.Ticker(ticker_symbol)
-        data = stock.history(period="1d")
-        if not data.empty:
-            price = float(data['Close'].iloc[-1])
-            print(f"{datetime.now()} - Fetched {symbol} ({ticker_symbol}) daily: {price}")
+        session = requests.Session()
+        session.get("https://www.nseindia.com", headers=headers)
+        response = session.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        price = data.get("priceInfo", {}).get("lastPrice")
+        if price is not None:
+            logger.info(f"Fetched NSE price for {symbol}: {price} at {datetime.now()}")
+            return float(price)
+        logger.warning(f"No valid price data for {symbol} from NSE at {datetime.now()}")
+        return None
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to fetch NSE price for {symbol}: {e}")
+        return None
+    except (KeyError, ValueError) as e:
+        logger.error(f"Error parsing NSE data for {symbol}: {e}")
+        return None
+
+def fetch_alpha_vantage_price(symbol):
+    """Fetch stock price from Alpha Vantage."""
+    url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={ALPHA_VANTAGE_API_KEY}"
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        price = data.get("Global Quote", {}).get("05. price")
+        if price is not None:
+            price = float(price)
+            logger.info(f"Fetched {symbol} from Alpha Vantage: {price} at {datetime.now()}")
             return price
-        print(f"{datetime.now()} - No data for {symbol} ({ticker_symbol})")
+        logger.warning(f"No valid price for {symbol} from Alpha Vantage at {datetime.now()}")
         return None
-    except Exception as e:
-        print(f"{datetime.now()} - Error fetching {symbol} ({ticker_symbol}): {e}")
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to fetch {symbol} from Alpha Vantage: {e}")
         return None
+    except (KeyError, ValueError) as e:
+        logger.error(f"Error parsing Alpha Vantage data for {symbol}: {e}")
+        return None
+
+def fetch_price(symbol):
+    """Fetch price, prioritizing NSE for Indian stocks, then Alpha Vantage."""
+    # Strip .NS suffix for NSE API if present
+    nse_symbol = symbol.replace('.NS', '') if '.NS' in symbol else symbol
+    if nse_symbol in ['INFY', 'RELIANCE', 'TCS', 'HDFCBANK', 'HONASA', 'HDFCLIFE', 'JIOFIN', 'NTPCGREEN', 'TATATECH'] or '.NS' in symbol:
+        price = get_nse_live_price(nse_symbol)
+        if price is not None:
+            return price
+        logger.info(f"Falling back to Alpha Vantage for {symbol}")
+    # Use Alpha Vantage for SAP and others
+    alpha_symbol = symbol if symbol == 'SAP' else f"{symbol}.NS" if '.NS' in symbol or nse_symbol in ['INFY', 'RELIANCE', 'TCS', 'HDFCBANK'] else symbol
+    return fetch_alpha_vantage_price(alpha_symbol)
 
 def calculate_total_inr():
     total_inr = 0
@@ -59,28 +120,7 @@ def calculate_total_inr():
         total_inr += value
     return total_inr
 
-def update_prices():
-    print(f"{datetime.now()} - Price update thread started")
-    while True:
-        for inv in investments:
-            if inv['type'] == 'stock':
-                real_price = fetch_yahoo_price(inv['symbol'])
-                if real_price is not None:
-                    inv['current_price'] = real_price
-                else:
-                    print(f"{datetime.now()} - Using last known price for {inv['symbol']}: {inv['current_price']}")
-        save_investments()
-        time.sleep(60)
-
 investments = load_investments()
-for inv in investments:
-    if inv['type'] == 'stock':
-        real_price = fetch_yahoo_price(inv['symbol'])
-        if real_price is not None:
-            inv['current_price'] = real_price
-        else:
-            print(f"{datetime.now()} - Startup fetch failed for {inv['symbol']}, using saved: {inv['current_price']}")
-save_investments()
 
 @app.route('/')
 def index():
@@ -101,9 +141,11 @@ def add_investment():
         'currency': CURRENCY.get(symbol, '₹')
     }
     if investment['type'] == 'stock':
-        real_price = fetch_yahoo_price(symbol)
+        real_price = fetch_price(symbol)
         if real_price is not None:
             investment['current_price'] = real_price
+        elif symbol in INITIAL_PRICES:
+            investment['current_price'] = INITIAL_PRICES[symbol]
     investments.append(investment)
     save_investments()
     return jsonify({'status': 'success'})
@@ -144,8 +186,21 @@ def update_investment():
     except (ValueError, TypeError):
         return jsonify({'status': 'error', 'message': 'Index must be a number'})
 
+@app.route('/update_prices', methods=['GET'])
+def trigger_update_prices():
+    updated = False
+    for inv in investments:
+        if inv['type'] == 'stock':
+            real_price = fetch_price(inv['symbol'])
+            if real_price is not None:
+                inv['current_price'] = real_price
+                updated = True
+            else:
+                logger.info(f"Retained last price for {inv['symbol']}: {inv['current_price']}")
+            time.sleep(1)  # Avoid overwhelming servers
+    if updated:
+        save_investments()
+    return jsonify({'status': 'Prices updated' if updated else 'No updates available'})
+
 if __name__ == '__main__':
-    price_thread = threading.Thread(target=update_prices, daemon=True)
-    price_thread.start()
-    port = int(os.environ.get('PORT', 5001))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5001)))

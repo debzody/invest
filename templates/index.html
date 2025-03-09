@@ -9,6 +9,8 @@
         <h1>Investment Tracker</h1>
         <div class="total-section">
             <h2>Total Value: <span id="totalValue">₹0.00</span></h2>
+            <button id="refreshPrices">Refresh Prices</button>
+            <span id="refreshStatus"></span>
         </div>
         
         <!-- Add Investment Form -->
@@ -160,7 +162,19 @@
             });
         }
 
-        setInterval(updateTable, 5000);
+        function updatePrices() {
+            document.getElementById('refreshStatus').textContent = 'Updating...';
+            fetch('/update_prices')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('refreshStatus').textContent = data.status;
+                    updateTable();
+                });
+        }
+
+        document.getElementById('refreshPrices').addEventListener('click', updatePrices);
+        setInterval(updatePrices, 30000); // Update stocks every 30 seconds
+        setInterval(updateTable, 5000);   // Refresh table every 5 seconds
         updateTable();
     </script>
 </body>

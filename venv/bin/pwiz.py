@@ -1,4 +1,4 @@
-#!/Users/I069208/invest/venv/bin/python3.12
+#!/Users/I069208/invest/venv/bin/python3.9
 
 import datetime
 import os
