@@ -1,72 +1,11 @@
 [
     {
         "type": "stock",
-        "symbol": "NTPCGREEN",
-        "name": "NTPC Green Energy",
-        "quantity": 25.0,
-        "purchase_price": 100.0,
-        "current_price": 96.88,
-        "date_added": "2025-03-09 15:12:34",
-        "currency": "\u20b9"
-    },
-    {
-        "type": "stock",
-        "symbol": "SAP",
-        "name": "SAP SE",
-        "quantity": 23.0,
-        "purchase_price": 45.0,
-        "current_price": 276.8,
-        "date_added": "2025-03-09 15:30:22",
-        "currency": "\u20ac"
-    },
-    {
-        "type": "stock",
-        "symbol": "JIOFIN",
-        "name": "Jio Financial Services",
-        "quantity": 33.0,
-        "purchase_price": 234.0,
-        "current_price": 221.9,
-        "date_added": "2025-03-09 15:30:38",
-        "currency": "\u20b9"
-    },
-    {
-        "type": "stock",
-        "symbol": "HDFC_TECH",
-        "name": "HDFC Technology Fund",
-        "quantity": 12.0,
-        "purchase_price": 34.0,
-        "current_price": 13.15,
-        "date_added": "2025-03-09 16:36:48",
-        "currency": "\u20b9"
-    },
-    {
-        "type": "stock",
-        "symbol": "MO_SMALLCAP",
-        "name": "Motilal Oswal Small Cap Fund",
-        "quantity": 12.0,
-        "purchase_price": 11.0,
-        "current_price": 12.4632,
-        "date_added": "2025-03-09 17:11:44",
-        "currency": "\u20b9"
-    },
-    {
-        "type": "stock",
-        "symbol": "HDFCLIFE",
-        "name": "HDFC Life Insurance",
+        "symbol": "MO_DEFENCE",
+        "name": "Motilal Oswal Nifty Indi",
         "quantity": 1.0,
         "purchase_price": 1.0,
-        "current_price": 625.3,
-        "date_added": "2025-03-09 17:48:32",
-        "currency": "\u20b9"
-    },
-    {
-        "type": "stock",
-        "symbol": "MO_MULTICAP",
-        "name": "Motilal Oswal Multi Cap Fund",
-        "quantity": 1.0,
-        "purchase_price": 1.0,
-        "current_price": 12.1652,
-        "date_added": "2025-03-09 18:02:18",
+        "current_price": 7.4358,
         "currency": "\u20b9"
     }
 ]
