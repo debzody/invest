@@ -58,5 +58,15 @@
         "current_price": 625.3,
         "date_added": "2025-03-09 17:48:32",
         "currency": "\u20b9"
+    },
+    {
+        "type": "stock",
+        "symbol": "MO_MULTICAP",
+        "name": "Motilal Oswal Multi Cap Fund",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 12.1652,
+        "date_added": "2025-03-09 18:02:18",
+        "currency": "\u20b9"
     }
 ]

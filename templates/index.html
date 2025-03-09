@@ -57,7 +57,6 @@
                         <th>Current Price</th>
                         <th>Total Value</th>
                         <th>Profit/Loss</th>
-                        <th>Date Added</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -111,10 +110,10 @@
                         <td>${inv.currency}${inv.current_price.toFixed(2)}</td>
                         <td>${inv.currency}${totalValue.toFixed(2)}</td>
                         <td class="${profitLoss >= 0 ? 'profit' : 'loss'}">${inv.currency}${profitLoss.toFixed(2)}</td>
-                        <td>${inv.date_added}</td>
+                        
                         <td>
                             <button class="save-btn" data-index="${index}">Save</button>
-                            <button class="delete-btn" data-index="${index}">Delete</button>
+                            <button class="delete-btn" data-index="${index}"></button>
                         </td>
                     `;
                     tbody.appendChild(row);
