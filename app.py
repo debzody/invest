@@ -25,7 +25,7 @@ SCHEME_CODES = {
     'INVESCO_TECH': '152863',  # Example: Invesco India Technology Fund (hypothetical)
     'MO_SMALLCAP': '152237',  # Example: Motilal Oswal Small Cap Fund (hypothetical)
     'MO_MULTICAP': '152651',  # Example: Motilal Oswal Multicap Fund (hypothetical)
-    'MO_DEFENCE': '150123',  # Hypothetical - replace with real code
+    'MO_DEFENCE': '152712',  # Hypothetical - replace with real code
     'EDEL_TECH': '152438'  # Hypothetical - replace with real code
 }
 
@@ -182,7 +182,6 @@ def add_investment():
         'quantity': float(data['quantity']),
         'purchase_price': float(data['purchase_price']),
         'current_price': float(data['purchase_price']),
-        'date_added': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         'currency': CURRENCY.get(symbol, '₹')
     }
     if investment['type'] == 'stock':

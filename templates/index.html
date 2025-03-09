@@ -32,7 +32,7 @@
                     <option value="INVESCO_TECH|Invesco India Technology Fund">Invesco India Technology Fund (MF)</option>
                     <option value="MO_SMALLCAP|Motilal Oswal Small Cap Fund">Motilal Oswal Small Cap Fund (MF)</option>
                     <option value="MO_MULTICAP|Motilal Oswal Multi Cap Fund">Motilal Oswal Multi Cap Fund (MF)</option>
-                    <option value="MO_DEFENCE|Motilal Oswal Nifty India Defence Index Fund">Motilal Oswal Nifty India Defence Index Fund (MF)</option>
+                    <option value="MO_DEFENCE|Motilal Oswal Nifty Indi">Motilal Oswal Defence Index Fund (MF)</option>
                     <option value="EDEL_TECH|Edelweiss Technology Fund">Edelweiss Technology Fund (MF)</option>
                 </select>
                 <input type="text" name="symbol" id="symbol" placeholder="Symbol" required>
@@ -82,12 +82,22 @@
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.status === 'success') {
                     this.reset();
                     updateTable();
+                } else {
+                    console.error('Error adding investment:', data.message);
                 }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
             });
         });
 
