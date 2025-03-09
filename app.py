@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # Load environment variables
 load_dotenv()
-ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY', 'AMRHJR34NP8I07JI')  # Fallback to your provided key
+FINNHUB_API_KEY = os.getenv('FINNHUB_API_KEY', 'cv67nshr01qi7f6oqp00cv67nshr01qi7f6oqp0g')  # Use provided Finnhub key
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -89,25 +89,25 @@ def get_nse_live_price(symbol):
         logger.error(f"Error parsing NSE data for {symbol}: {e}")
         return None
 
-def fetch_alpha_vantage_price(symbol):
-    """Fetch stock price from Alpha Vantage."""
-    url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={ALPHA_VANTAGE_API_KEY}"
+def fetch_finnhub_price(symbol):
+    """Fetch stock price from Finnhub for SAP SE."""
+    url = f"https://finnhub.io/api/v1/quote?symbol={symbol}&token={FINNHUB_API_KEY}"
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
         data = response.json()
-        price = data.get("Global Quote", {}).get("05. price")
-        if price is not None:
+        price = data.get("c")  # Current price
+        if price is not None and price > 0:
             price = float(price)
-            logger.info(f"Fetched {symbol} from Alpha Vantage: {price} at {datetime.now()}")
+            logger.info(f"Fetched {symbol} from Finnhub: {price} at {datetime.now()}")
             return price
-        logger.warning(f"No valid price for {symbol} from Alpha Vantage at {datetime.now()}")
+        logger.warning(f"No valid price for {symbol} from Finnhub at {datetime.now()}")
         return None
     except requests.exceptions.RequestException as e:
-        logger.error(f"Failed to fetch {symbol} from Alpha Vantage: {e}")
+        logger.error(f"Failed to fetch {symbol} from Finnhub: {e}")
         return None
     except (KeyError, ValueError) as e:
-        logger.error(f"Error parsing Alpha Vantage data for {symbol}: {e}")
+        logger.error(f"Error parsing Finnhub data for {symbol}: {e}")
         return None
 
 def get_mutual_fund_nav(symbol):
@@ -134,7 +134,7 @@ def get_mutual_fund_nav(symbol):
         return None
 
 def fetch_price(symbol):
-    """Fetch price, prioritizing NSE for Indian stocks, Alpha Vantage for SAP, and mfapi.in for mutual funds."""
+    """Fetch price, prioritizing Finnhub for SAP SE, NSE for Indian stocks, and mfapi.in for mutual funds."""
     # Mutual funds
     if symbol in SCHEME_CODES:
         price = get_mutual_fund_nav(symbol)
@@ -143,23 +143,29 @@ def fetch_price(symbol):
         logger.info(f"No NAV from mfapi.in for {symbol}, using initial price if available")
         return None
     
+    # SAP SE via Finnhub
+    if symbol == 'SAP':
+        price = fetch_finnhub_price(symbol)
+        if price is not None:
+            return price
+        logger.info(f"No price from Finnhub for {symbol}, using initial price if available")
+        return None
+    
     # NSE stocks
     nse_symbol = symbol.replace('.NS', '') if '.NS' in symbol else symbol
     if nse_symbol in ['INFY', 'RELIANCE', 'TCS', 'HDFCBANK', 'HONASA', 'HDFCLIFE', 'JIOFIN', 'NTPCGREEN', 'TATATECH'] or '.NS' in symbol:
         price = get_nse_live_price(nse_symbol)
         if price is not None:
             return price
-        logger.info(f"Falling back to Alpha Vantage for {symbol}")
+        logger.info(f"No price from NSE for {symbol}, using initial price if available")
     
-    # SAP and others via Alpha Vantage
-    alpha_symbol = symbol if symbol == 'SAP' else f"{symbol}.NS" if '.NS' in symbol or nse_symbol in ['INFY', 'RELIANCE', 'TCS', 'HDFCBANK'] else symbol
-    return fetch_alpha_vantage_price(alpha_symbol)
+    return None
 
 def calculate_total_inr():
     total_inr = 0
     for inv in investments:
         value = inv['quantity'] * inv['current_price']
-        if inv['currency'] == '€':
+        if inv['currency'] == '$':  # SAP SE is in USD
             value *= USD_TO_INR
         total_inr += value
     return total_inr
@@ -173,78 +179,104 @@ def index():
 
 @app.route('/add_investment', methods=['POST'])
 def add_investment():
-    data = request.form
-    symbol = data['symbol']
-    investment = {
-        'type': data['type'],
-        'symbol': symbol,
-        'name': data['name'],
-        'quantity': float(data['quantity']),
-        'purchase_price': float(data['purchase_price']),
-        'current_price': float(data['purchase_price']),
-        'currency': CURRENCY.get(symbol, '₹')
-    }
-    if investment['type'] == 'stock':
-        real_price = fetch_price(symbol)
-        if real_price is not None:
-            investment['current_price'] = real_price
-        elif symbol in INITIAL_PRICES:
-            investment['current_price'] = INITIAL_PRICES[symbol]
-    investments.append(investment)
-    save_investments()
-    return jsonify({'status': 'success'})
+    try:
+        data = request.form
+        symbol = data['symbol']
+        investment = {
+            'type': data['type'],
+            'symbol': symbol,
+            'name': data['name'],
+            'quantity': float(data['quantity']),
+            'purchase_price': float(data['purchase_price']),
+            'current_price': float(data['purchase_price']),
+            'currency': CURRENCY.get(symbol, '₹'),
+            'date_added': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        if investment['type'] == 'stock':
+            real_price = fetch_price(symbol)
+            if real_price is not None:
+                investment['current_price'] = real_price
+            elif symbol in INITIAL_PRICES:
+                investment['current_price'] = INITIAL_PRICES[symbol]
+            else:
+                return jsonify({'status': 'error', 'message': f'Could not fetch price for {symbol}'}), 400
+        investments.append(investment)
+        save_investments()
+        return jsonify({'status': 'success'})
+    except ValueError as e:
+        logger.error(f"Validation error in add_investment: {e}")
+        return jsonify({'status': 'error', 'message': 'Invalid numeric input'}), 400
+    except Exception as e:
+        logger.error(f"Error in add_investment: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/get_investments')
 def get_investments():
-    total_inr = calculate_total_inr()
-    return jsonify({'investments': investments, 'total_inr': total_inr})
+    try:
+        total_inr = calculate_total_inr()
+        return jsonify({'investments': investments, 'total_inr': total_inr})
+    except Exception as e:
+        logger.error(f"Error in get_investments: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/delete_investment', methods=['POST'])
 def delete_investment():
-    data = request.json
-    index = data.get('index')
     try:
+        data = request.json
+        index = data.get('index')
         index = int(index)
         if 0 <= index < len(investments):
             investments.pop(index)
             save_investments()
             return jsonify({'status': 'success'})
-        return jsonify({'status': 'error', 'message': 'Invalid index'})
+        return jsonify({'status': 'error', 'message': 'Invalid index'}), 400
     except (ValueError, TypeError):
-        return jsonify({'status': 'error', 'message': 'Index must be a number'})
+        logger.error(f"Invalid index in delete_investment")
+        return jsonify({'status': 'error', 'message': 'Index must be a number'}), 400
+    except Exception as e:
+        logger.error(f"Error in delete_investment: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/update_investment', methods=['POST'])
 def update_investment():
-    data = request.json
-    index = data.get('index')
     try:
+        data = request.json
+        index = data.get('index')
         index = int(index)
         if 0 <= index < len(investments):
             investments[index]['quantity'] = float(data['quantity'])
             investments[index]['purchase_price'] = float(data['purchase_price'])
-            if data['current_price'] is not None:
+            if 'current_price' in data and data['current_price'] is not None:
                 investments[index]['current_price'] = float(data['current_price'])
             save_investments()
             return jsonify({'status': 'success'})
-        return jsonify({'status': 'error', 'message': 'Invalid index'})
+        return jsonify({'status': 'error', 'message': 'Invalid index'}), 400
     except (ValueError, TypeError):
-        return jsonify({'status': 'error', 'message': 'Index must be a number'})
+        logger.error(f"Invalid data in update_investment")
+        return jsonify({'status': 'error', 'message': 'Invalid input data'}), 400
+    except Exception as e:
+        logger.error(f"Error in update_investment: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/update_prices', methods=['GET'])
 def trigger_update_prices():
-    updated = False
-    for inv in investments:
-        if inv['type'] == 'stock':
-            real_price = fetch_price(inv['symbol'])
-            if real_price is not None:
-                inv['current_price'] = real_price
-                updated = True
-            else:
-                logger.info(f"Retained last price for {inv['symbol']}: {inv['current_price']}")
-            time.sleep(1)  # Avoid overwhelming servers
-    if updated:
-        save_investments()
-    return jsonify({'status': 'Prices updated' if updated else 'No updates available'})
+    try:
+        updated = False
+        for inv in investments:
+            if inv['type'] == 'stock':
+                real_price = fetch_price(inv['symbol'])
+                if real_price is not None:
+                    inv['current_price'] = real_price
+                    updated = True
+                else:
+                    logger.info(f"Retained last price for {inv['symbol']}: {inv['current_price']}")
+                time.sleep(1)  # Avoid overwhelming servers
+        if updated:
+            save_investments()
+        return jsonify({'status': 'Prices updated' if updated else 'No updates available'})
+    except Exception as e:
+        logger.error(f"Error in update_prices: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5002)))
