@@ -37,13 +37,13 @@ INITIAL_PRICES = {
 }
 
 CURRENCY = {
-    'SAP': '€', 'HONASA.NS': '₹', 'HDFCLIFE': '₹', 'JIOFIN': '₹', 'NTPCGREEN': '₹',
+    'SAP': '$', 'HONASA.NS': '₹', 'HDFCLIFE': '₹', 'JIOFIN': '₹', 'NTPCGREEN': '₹',
     'TATATECH': '₹', 'HDFC_TECH': '₹', 'INVESCO_TECH': '₹', 'MO_SMALLCAP': '₹',
     'MO_MULTICAP': '₹', 'MO_DEFENCE': '₹', 'EDEL_TECH': '₹', 'INFY': '₹',
     'RELIANCE': '₹', 'TCS': '₹', 'HDFCBANK': '₹'
 }
 
-EUR_TO_INR = 90.00
+USD_TO_INR = 87.00
 
 def load_investments():
     """Load existing investments from the data file."""
@@ -160,7 +160,7 @@ def calculate_total_inr():
     for inv in investments:
         value = inv['quantity'] * inv['current_price']
         if inv['currency'] == '€':
-            value *= EUR_TO_INR
+            value *= USD_TO_INR
         total_inr += value
     return total_inr
 
