@@ -45,6 +45,15 @@ CURRENCY = {
 
 USD_TO_INR = 87.00
 
+epf_value = 0  # Store EPF value globally
+
+@app.route('/save_epf', methods=['POST'])
+def save_epf():
+    global epf_value
+    data = request.json
+    epf_value = data.get("epfAmount", 0)
+    return jsonify({"status": "success", "epf": epf_value})
+
 def load_investments():
     """Load existing investments from the data file."""
     if os.path.exists(DATA_FILE):
@@ -249,7 +258,7 @@ def add_investment_batch():
 def get_investments():
     try:
         total_inr = calculate_total_inr()
-        return jsonify({'investments': investments, 'total_inr': total_inr})
+        return jsonify({'investments': investments, 'total_inr': total_inr, "epf": epf_value})
     except Exception as e:
         logger.error(f"Error in get_investments: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500

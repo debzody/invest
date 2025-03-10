@@ -1,18 +1,9 @@
 [
     {
         "type": "stock",
-        "symbol": "MO_DEFENCE",
-        "name": "Motilal Oswal Nifty Indi",
-        "quantity": 1.0,
-        "purchase_price": 1.0,
-        "current_price": 7.4358,
-        "currency": "\u20b9"
-    },
-    {
-        "type": "stock",
         "symbol": "SAP",
         "name": "SAP SE",
-        "quantity": 1.0,
+        "quantity": 111.0,
         "purchase_price": 1.0,
         "current_price": 276.8,
         "currency": "$",
@@ -24,19 +15,9 @@
         "name": "Jio Financial Services",
         "quantity": 1.0,
         "purchase_price": 1.0,
-        "current_price": 221.9,
+        "current_price": 215.85,
         "currency": "\u20b9",
         "date_added": "2025-03-09 23:20:28"
-    },
-    {
-        "type": "stock",
-        "symbol": "SAP",
-        "name": "SAP SE",
-        "quantity": 1.0,
-        "purchase_price": 1.0,
-        "current_price": 276.8,
-        "currency": "$",
-        "date_added": "2025-03-10 07:23:07"
     },
     {
         "type": "stock",
@@ -44,7 +25,7 @@
         "name": "HONASA Consumer Ltd.",
         "quantity": 1.0,
         "purchase_price": 1.0,
-        "current_price": 222.7,
+        "current_price": 220.0,
         "currency": "\u20b9",
         "date_added": "2025-03-10 07:23:07"
     },
@@ -54,7 +35,7 @@
         "name": "HDFC Life Insurance",
         "quantity": 1.0,
         "purchase_price": 1.0,
-        "current_price": 625.3,
+        "current_price": 623.2,
         "currency": "\u20b9",
         "date_added": "2025-03-10 07:23:08"
     },
@@ -64,7 +45,7 @@
         "name": "Jio Financial Services",
         "quantity": 1.0,
         "purchase_price": 1.0,
-        "current_price": 221.9,
+        "current_price": 215.85,
         "currency": "\u20b9",
         "date_added": "2025-03-10 07:23:08"
     },
@@ -74,7 +55,7 @@
         "name": "NTPC Green Energy",
         "quantity": 1.0,
         "purchase_price": 1.0,
-        "current_price": 96.88,
+        "current_price": 94.85,
         "currency": "\u20b9",
         "date_added": "2025-03-10 07:23:08"
     },
@@ -84,7 +65,7 @@
         "name": "Tata Technologies",
         "quantity": 1.0,
         "purchase_price": 1.0,
-        "current_price": 672.0,
+        "current_price": 650.0,
         "currency": "\u20b9",
         "date_added": "2025-03-10 07:23:09"
     },

@@ -67,6 +67,13 @@
                 <tbody id="investmentsBody"></tbody>
             </table>
         </div>
+        <!-- EPF Section -->
+        <div class="epf-section">
+            <h2>EPF Contribution</h2>
+            <input type="number" id="epfAmount" placeholder="Enter EPF Amount" step="0.01">
+            <button id="saveEpfBtn">Save EPF</button>
+            <h3>Total EPF: ₹<span id="epfValue">0.00</span></h3>
+        </div>
     </div>
 
     <script>
@@ -162,7 +169,28 @@
                 toggleBtn.textContent = 'Hide Add New Investment';
             }
         });
+        document.getElementById('saveEpfBtn').addEventListener('click', function () {
+        const epfAmount = parseFloat(document.getElementById('epfAmount').value) || 0;
 
+                fetch('/save_epf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ epfAmount: epfAmount })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('epfValue').textContent = epfAmount.toFixed(2);
+                        updateTable(); // Refresh total investment
+                    }
+                })
+                .catch(error => console.error('Error saving EPF:', error));
+            });
+
+            // Update total investments to include EPF
+            function updateTotalInvestment(totalInr, epfAmount) {
+                document.getElementById('totalValue').textContent = `₹${(totalInr + epfAmount).toFixed(2)}`;
+            }   
         // Ensure form is collapsed on page load
         formSection.classList.remove('active');
 
@@ -192,8 +220,11 @@
                     `;
                     tbody.appendChild(row);
                 });
-
-                document.getElementById('totalValue').textContent = `₹${data.total_inr.toFixed(2)}`;
+                const totalInr = data.total_inr || 0;
+                const epfAmount = data.epf || 0;
+                document.getElementById('epfValue').textContent = epfAmount.toFixed(2);
+                updateTotalInvestment(totalInr, epfAmount);       
+                //document.getElementById('totalValue').textContent = `₹${data.total_inr.toFixed(2)} + epfAmount`;
 
                 document.querySelectorAll('.save-btn').forEach(btn => {
                     btn.addEventListener('click', function() {

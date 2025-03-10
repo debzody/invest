@@ -295,3 +295,46 @@ tr:hover {
           "add addAll";
   }
 }
+
+.epf-section {
+  background: #e3f2fd; /* Light blue background */
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.epf-section h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.epf-section input {
+  padding: 10px;
+  font-size: 16px;
+  width: 200px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.epf-section button {
+  padding: 10px 16px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.epf-section button:hover {
+  background-color: #005bb5;
+}
+
+.epf-section h3 {
+  margin-top: 10px;
+  font-size: 20px;
+}
