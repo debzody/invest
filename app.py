@@ -210,6 +210,41 @@ def add_investment():
         logger.error(f"Error in add_investment: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+@app.route('/add_investment/batch', methods=['POST'])
+def add_investment_batch():
+    try:
+        data = request.get_json()
+        if not isinstance(data, list):
+            return jsonify({'status': 'error', 'message': 'Expected a list of investments'}), 400
+
+        for investment_data in data:
+            investment = {
+                'type': investment_data.get('type', 'stock'),
+                'symbol': investment_data['symbol'],
+                'name': investment_data['name'],
+                'quantity': float(investment_data.get('quantity', 1)),  # Default to 1
+                'purchase_price': float(investment_data.get('purchase_price', 1)),  # Default to 1
+                'current_price': float(investment_data.get('current_price', 1)),  # Default to 1
+                'currency': CURRENCY.get(investment_data['symbol'], '₹'),
+                'date_added': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+            if investment['type'] == 'stock' and investment['symbol'] != 'SAP':  # Skip Finnhub for batch SAP
+                real_price = fetch_price(investment['symbol'])
+                if real_price is not None:
+                    investment['current_price'] = real_price
+                elif investment['symbol'] in INITIAL_PRICES:
+                    investment['current_price'] = INITIAL_PRICES[investment['symbol']]
+            investments.append(investment)
+        
+        save_investments()
+        return jsonify({'status': 'success'})
+    except ValueError as e:
+        logger.error(f"Validation error in add_investment_batch: {e}")
+        return jsonify({'status': 'error', 'message': 'Invalid numeric input'}), 400
+    except Exception as e:
+        logger.error(f"Error in add_investment_batch: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 @app.route('/get_investments')
 def get_investments():
     try:

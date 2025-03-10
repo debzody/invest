@@ -8,13 +8,16 @@
     <div class="container">
         <h1>Investment Tracker</h1>
         <div class="total-section">
-            <h2>Total Value: <span id="totalValue">₹0.00</span></h2>
+            <h2> <span id="totalValue">₹0.00</span></h2>
             <button id="refreshPrices">Refresh Prices</button>
             <span id="refreshStatus"></span>
         </div>
         
+        <!-- Toggle Button for Form Section -->
+        <button id="toggleFormBtn" class="toggle-btn">Show Add New Investment</button>
+        
         <!-- Add Investment Form -->
-        <div class="form-section">
+        <div class="form-section" id="investmentFormSection">
             <h2>Add New Investment</h2>
             <form id="investmentForm">
                 <select name="type" required>
@@ -40,6 +43,7 @@
                 <input type="number" name="quantity" placeholder="Quantity" step="0.01" required>
                 <input type="number" name="purchase_price" placeholder="Purchase Price" step="0.01" required>
                 <button type="submit">Add Investment</button>
+                <button type="button" id="addAllBtn">Add All</button>
             </form>
         </div>
 
@@ -101,6 +105,67 @@
             });
         });
 
+        // New function to add all investments
+        function addAllInvestments() {
+            const suggestions = document.getElementById('suggestionBox').options;
+            const investments = [];
+            for (let i = 1; i < suggestions.length; i++) { // Start from 1 to skip "Select a suggestion"
+                const [symbol, name] = suggestions[i].value.split('|');
+                investments.push({
+                    type: 'stock', // Assuming all are stocks for simplicity
+                    symbol: symbol,
+                    name: name,
+                    quantity: 1,
+                    purchase_price: 1,
+                    current_price: 1 // Set to 1 as requested
+                });
+            }
+
+            // Send batch request to server
+            fetch('/add_investment/batch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(investments)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    updateTable();
+                } else {
+                    console.error('Error adding all investments:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+        }
+
+        document.getElementById('addAllBtn').addEventListener('click', addAllInvestments);
+
+        // Toggle form section visibility
+        const formSection = document.getElementById('investmentFormSection');
+        const toggleBtn = document.getElementById('toggleFormBtn');
+        let isCollapsed = true; // Start collapsed
+
+        toggleBtn.addEventListener('click', function() {
+            isCollapsed = !isCollapsed;
+            if (isCollapsed) {
+                formSection.classList.remove('active');
+                toggleBtn.textContent = 'Show Add New Investment';
+            } else {
+                formSection.classList.add('active');
+                toggleBtn.textContent = 'Hide Add New Investment';
+            }
+        });
+
+        // Ensure form is collapsed on page load
+        formSection.classList.remove('active');
+
         function updateTable() {
             fetch('/get_investments')
             .then(response => response.json())
@@ -120,7 +185,6 @@
                         <td>${inv.currency}${inv.current_price.toFixed(2)}</td>
                         <td>${inv.currency}${totalValue.toFixed(2)}</td>
                         <td class="${profitLoss >= 0 ? 'profit' : 'loss'}">${inv.currency}${profitLoss.toFixed(2)}</td>
-                        
                         <td>
                             <button class="save-btn" data-index="${index}">Save</button>
                             <button class="delete-btn" data-index="${index}"></button>
@@ -180,5 +244,5 @@
         setInterval(updateTable, 10000);  // Refresh table every 10 seconds
         updateTable();
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91df29b6a9a181eb',t:'MTc0MTU3MTQ0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

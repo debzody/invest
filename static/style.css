@@ -1,8 +1,8 @@
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; /* Apple font stack */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   margin: 0;
   padding: 20px;
-  background-color: #f5f5f7; /* Apple’s light gray background */
+  background-color: #f5f5f7;
 }
 
 .container {
@@ -10,12 +10,12 @@ body {
   margin: 0 auto;
   background: white;
   padding: 20px;
-  border-radius: 20px; /* Larger radius for Apple look */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 h1, h2 {
-  color: #1d1d1f; /* Apple’s dark gray text */
+  color: #1d1d1f;
 }
 
 h1 {
@@ -23,6 +23,7 @@ h1 {
   font-weight: 600;
   text-align: center;
   margin-bottom: 20px;
+  display: none;
 }
 
 h2 {
@@ -44,23 +45,23 @@ h2 {
 
 .total-section h2 {
   margin: 0;
-  margin-right: auto;
-  margin-left: 38%;
-  font-size: 26px;
+  font-size: 25px;
+  margin-left: 41%;
 }
 
 .total-section button {
   padding: 8px 16px;
-  background-color: #007aff; /* Apple blue */
+  background-color: #007aff;
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-left: 20%;
 }
 
 .total-section button:hover {
-  background-color: #005bb5; /* Darker blue on hover */
+  background-color: #005bb5;
 }
 
 .total-section span#refreshStatus {
@@ -68,74 +69,111 @@ h2 {
   color: #666;
 }
 
-/* General Form Styling */
 .form-section {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 700px;
-  margin: 20px auto;
+  background: #445e68;
+  padding: 0px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: center;
+  width: 95%;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, padding 0.3s ease-out;
 }
 
-/* Form Grid Layout */
+.form-section.active {
+  max-height: 500px; /* Adjust based on content height */
+  padding: 20px;
+}
+
+.form-section h2 {
+  flex: 0 0 100%;
+  text-align: center;
+  display: none;
+}
+
 .form-section form {
   display: grid;
-  grid-template-columns: 1fr 1fr;  /* Two columns for better fit */
-  gap: 10px;
-  align-items: center;
+  grid-template-areas:
+      "type suggestion symbol name"
+      "quantity purchase_price add addAll"; /* Adjusted for Add All button */
+  grid-gap: 15px;
   width: 100%;
+  max-width: 900px;
 }
 
-/* Input and Select Styling */
-.form-section input,
-.form-section select {
-  width: 91%;
-  padding: 11px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
+.form-section select[name="type"] {
+  grid-area: type;
 }
 
-/* Label Styling */
-.form-section label {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 5px;
-  display: block;
+.form-section select[name="suggestion"] {
+  grid-area: suggestion;
 }
 
-/* Full-Width Inputs */
-.form-section .full-width {
-  grid-column: span 2;
+.form-section input[name="symbol"] {
+  grid-area: symbol;
 }
 
-/* Button Styling */
-.form-section button {
-  grid-column: span 2;  /* Make the button take full width */
+.form-section input[name="name"] {
+  grid-area: name;
+}
+
+.form-section input[name="quantity"] {
+  grid-area: quantity;
+}
+
+.form-section input[name="purchase_price"] {
+  grid-area: purchase_price;
+}
+
+.form-section button[type="submit"] {
+  grid-area: add;
+}
+
+.form-section #addAllBtn {
+  grid-area: addAll;
+}
+
+.form-section select,
+.form-section input {
+  margin: 0;
   padding: 10px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.3s;
+  width: 90%;
+}
+
+.form-section select:focus,
+.form-section input:focus {
+  border-color: #4CAF50;
+}
+
+.form-section button {
+  padding: 10px 16px;
   background-color: #4CAF50;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
+  width: 100%;
 }
 
 .form-section button:hover {
   background-color: #45a049;
 }
 
-/* Responsive Design */
-@media (max-width: 600px) {
-  .form-section form {
-      grid-template-columns: 1fr;  /* Single column on small screens */
-  }
-  
-  .form-section button {
-      grid-column: span 1;  /* Button fits in one column */
-  }
+.table-section {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 table {
@@ -161,15 +199,15 @@ tr {
 }
 
 tr:hover {
-  background-color: #f5f5f7; /* Subtle hover effect */
+  background-color: #f5f5f7;
 }
 
 .profit {
-  color: #34c759; /* Apple green */
+  color: #34c759;
 }
 
 .loss {
-  color: #ff3b30; /* Apple red */
+  color: #ff3b30;
 }
 
 .edit-quantity,
@@ -184,7 +222,7 @@ tr:hover {
 
 .edit-quantity:focus,
 .edit-price:focus {
-  border-color: #007aff;
+  border-color: #4CAF50;
 }
 
 .save-btn {
@@ -226,4 +264,34 @@ tr:hover {
 .delete-btn::before {
   content: "×";
   font-weight: bold;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  width: 100%;
+  transition: background-color 0.3s;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.toggle-btn:hover {
+  background-color: #45a049;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .form-section form {
+      grid-template-areas:
+          "type type"
+          "suggestion suggestion"
+          "symbol name"
+          "quantity purchase_price"
+          "add addAll";
+  }
 }

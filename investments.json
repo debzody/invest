@@ -7,5 +7,145 @@
         "purchase_price": 1.0,
         "current_price": 7.4358,
         "currency": "\u20b9"
+    },
+    {
+        "type": "stock",
+        "symbol": "SAP",
+        "name": "SAP SE",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 276.8,
+        "currency": "$",
+        "date_added": "2025-03-09 23:20:09"
+    },
+    {
+        "type": "stock",
+        "symbol": "JIOFIN",
+        "name": "Jio Financial Services",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 221.9,
+        "currency": "\u20b9",
+        "date_added": "2025-03-09 23:20:28"
+    },
+    {
+        "type": "stock",
+        "symbol": "SAP",
+        "name": "SAP SE",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 276.8,
+        "currency": "$",
+        "date_added": "2025-03-10 07:23:07"
+    },
+    {
+        "type": "stock",
+        "symbol": "HONASA.NS",
+        "name": "HONASA Consumer Ltd.",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 222.7,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:07"
+    },
+    {
+        "type": "stock",
+        "symbol": "HDFCLIFE",
+        "name": "HDFC Life Insurance",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 625.3,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:08"
+    },
+    {
+        "type": "stock",
+        "symbol": "JIOFIN",
+        "name": "Jio Financial Services",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 221.9,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:08"
+    },
+    {
+        "type": "stock",
+        "symbol": "NTPCGREEN",
+        "name": "NTPC Green Energy",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 96.88,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:08"
+    },
+    {
+        "type": "stock",
+        "symbol": "TATATECH",
+        "name": "Tata Technologies",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 672.0,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:09"
+    },
+    {
+        "type": "stock",
+        "symbol": "HDFC_TECH",
+        "name": "HDFC Technology Fund",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 13.15,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:09"
+    },
+    {
+        "type": "stock",
+        "symbol": "INVESCO_TECH",
+        "name": "Invesco India Technology Fund",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 8.56,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:09"
+    },
+    {
+        "type": "stock",
+        "symbol": "MO_SMALLCAP",
+        "name": "Motilal Oswal Small Cap Fund",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 12.4632,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:10"
+    },
+    {
+        "type": "stock",
+        "symbol": "MO_MULTICAP",
+        "name": "Motilal Oswal Multi Cap Fund",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 12.1652,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:10"
+    },
+    {
+        "type": "stock",
+        "symbol": "MO_DEFENCE",
+        "name": "Motilal Oswal Nifty Indi",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 7.4358,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:10"
+    },
+    {
+        "type": "stock",
+        "symbol": "EDEL_TECH",
+        "name": "Edelweiss Technology Fund",
+        "quantity": 1.0,
+        "purchase_price": 1.0,
+        "current_price": 10.7578,
+        "currency": "\u20b9",
+        "date_added": "2025-03-10 07:23:10"
     }
 ]
